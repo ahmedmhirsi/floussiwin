@@ -1,100 +1,259 @@
 <?php include __DIR__ . '/../partials/header.php'; ?>
 
-<!-- Top Greeting Header -->
-<div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4 anim-fade-in-up">
+<div class="page-header anim-fade-in-up">
     <div>
-        <h2 class="page-title mb-1" style="font-family: var(--font-heading);">Bonjour, <?php echo htmlspecialchars($userName); ?> 👋</h2>
-        <p class="page-subtitle mb-0">Ravi de vous revoir sur votre tableau de bord financier.</p>
+        <span class="badge bg-primary-light text-primary badge-premium mb-3">Aujourd'hui</span>
+        <h1 class="page-title mb-1" style="font-family: var(--font-heading);">Bonjour <?php echo htmlspecialchars($userName); ?> 👋</h1>
+        <p class="page-subtitle mb-0">Votre copilote financier vous guide pour prendre la meilleure décision aujourd'hui.</p>
     </div>
-    <div class="d-flex align-items-center gap-2">
-        <button id="btn-refresh-dashboard" class="btn-icon" title="Rafraîchir le dashboard">
-            <i class="bi bi-arrow-clockwise"></i>
-        </button>
+    <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center gap-3">
         <a href="index.php?route=transactions" class="btn btn-premium btn-sm">
-            <i class="bi bi-plus-circle me-1"></i>Nouvelle Transaction
+            <i class="bi bi-plus-circle me-1"></i>Ajouter transaction
+        </a>
+        <a href="index.php?route=saving" class="btn btn-outline-premium btn-sm">
+            <i class="bi bi-piggy-bank-fill me-1"></i>Plan d'épargne intelligent
         </a>
     </div>
 </div>
 
-<!-- Alert Configuration incomplete -->
 <?php if (!$profile): ?>
 <div class="alert alert-modern bg-primary bg-opacity-10 border-primary text-primary mb-4 anim-fade-in-up">
     <div class="alert-modern-icon"><i class="bi bi-info-circle-fill"></i></div>
     <div class="flex-1">
-        <h6 class="fw-bold mb-1">Configuration incomplète !</h6>
-        <p class="small mb-2 text-secondary">Configurez votre profil financier (revenus et charges fixes) pour activer le moteur d'épargne intelligent.</p>
+        <h6 class="fw-bold mb-1">Profil financier incomplet</h6>
+        <p class="small mb-2 text-secondary">Renseignez vos revenus et charges fixes pour activer l'analyse intelligente et recevoir des recommandations personnalisées.</p>
         <a href="index.php?route=profile" class="btn btn-outline-premium btn-sm py-1.5 px-3">
-            Configurer mon profil <i class="bi bi-arrow-right ms-1"></i>
+            Compléter mon profil <i class="bi bi-arrow-right ms-1"></i>
         </a>
     </div>
 </div>
 <?php endif; ?>
 
-<!-- Daily Intelligent Recommendation Card -->
-<?php if ($dailyRecommendation && $profile): ?>
-<div class="rec-box mb-4 anim-fade-in-up">
-    <div class="row align-items-center g-3">
-        <div class="col-md-7 border-md-end">
-            <div class="d-flex align-items-start gap-3">
-                <div class="bg-primary text-white p-3 rounded-4 fs-4"><i class="bi bi-lightbulb-fill text-warning"></i></div>
+<div class="row g-4 mb-4 anim-fade-in-up">
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm p-4" style="border-radius: var(--radius-lg);">
+            <div class="d-flex align-items-center justify-content-between mb-3">
                 <div>
-                    <h5 class="fw-bold text-dark mb-1" style="font-family: var(--font-heading);">Recommandation du jour</h5>
-                    <p class="text-secondary small mb-3">Pour optimiser votre budget et atteindre vos objectifs, épargnez aujourd'hui :</p>
-                    <div class="display-6 fw-bold text-primary mb-2" style="font-family: var(--font-heading); font-weight: 700; letter-spacing: -0.03em;">
-                        <?php echo number_format($dailyRecommendation['recommended_savings'], 2); ?> <span class="fs-4">DT</span>
+                    <h4 class="fw-bold mb-1">Budget disponible aujourd'hui</h4>
+                    <p class="text-secondary small mb-0">Cashflow disponible pour vos dépenses et épargne.</p>
+                </div>
+                <span class="badge bg-success-light text-success">Aujourd'hui</span>
+            </div>
+            <div class="display-5 fw-bold text-primary mb-3"><?php echo number_format($budgetSummary['availableToday'] ?? 0, 2); ?> DT</div>
+            <div class="d-flex flex-wrap gap-3 text-muted small">
+                <div><strong><?php echo $budgetSummary['remainingDays'] ?? 0; ?> jours</strong> restants</div>
+                <div><strong><?php echo number_format($budgetSummary['monthlyRemaining'] ?? 0, 2); ?> DT</strong> total disponible</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm p-4" style="border-radius: var(--radius-lg);">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <div>
+                    <h4 class="fw-bold mb-1">Mission du jour</h4>
+                    <p class="text-secondary small mb-0">Une action simple et réaliste pour avancer.</p>
+                </div>
+                <span class="badge bg-warning-light text-warning">Action</span>
+            </div>
+            <h3 class="fw-bold mb-2"><?php echo htmlspecialchars($mission['title'] ?? '—'); ?></h3>
+            <p class="text-dark mb-2"><?php echo htmlspecialchars($mission['description'] ?? '—'); ?></p>
+            <p class="text-muted small mb-0"><?php echo htmlspecialchars($mission['advice'] ?? '—'); ?></p>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4 anim-fade-in-up">
+    <div class="col-xl-4">
+        <div class="card border-0 shadow-sm p-4 h-100" style="border-radius: var(--radius-lg);">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <div>
+                    <h5 class="fw-bold mb-1">Objectif principal</h5>
+                    <p class="text-secondary small mb-0">L'objectif que vous devez prioriser.</p>
+                </div>
+                <i class="bi bi-star-fill text-warning fs-4"></i>
+            </div>
+            <h4 class="fw-bold mb-1"><?php echo htmlspecialchars($savingPlan['primaryObjective']['name'] ?? 'Aucun objectif'); ?></h4>
+            <p class="text-muted small mb-2">Échéance : <?php echo htmlspecialchars($savingPlan['primaryObjective']['deadline'] ?? '—'); ?></p>
+            <p class="mb-0 text-dark small">Il reste <?php echo htmlspecialchars($savingPlan['primaryObjective']['remaining'] ?? '0'); ?> DT à épargner.</p>
+            <div class="progress mt-4" style="height: 8px; background-color: rgba(15, 23, 42, 0.08);">
+                <div class="progress-bar bg-primary" role="progressbar" style="width: <?php echo min(100, $savingPlan['primaryObjective']['progress'] ?? 0); ?>%"></div>
+            </div>
+            <div class="mt-2 text-secondary small">Progression : <?php echo $savingPlan['primaryObjective']['progress'] ?? 0; ?>%</div>
+        </div>
+    </div>
+    <div class="col-xl-4">
+        <div class="card border-0 shadow-sm p-4 h-100" style="border-radius: var(--radius-lg);">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <div>
+                    <h5 class="fw-bold mb-1">Santé financière</h5>
+                    <p class="text-secondary small mb-0">Scores clés pour savoir où améliorer.</p>
+                </div>
+                <span class="badge bg-primary-light text-primary">Global <?php echo $financialHealth['overallScore'] ?? 0; ?>/100</span>
+            </div>
+            <?php $scores = [
+                ['label' => 'Cashflow', 'score' => $financialHealth['cashflowScore'] ?? 0],
+                ['label' => 'Budget', 'score' => $financialHealth['budgetScore'] ?? 0],
+                ['label' => 'Épargne', 'score' => $financialHealth['savingsScore'] ?? 0],
+                ['label' => 'Objectifs', 'score' => $financialHealth['goalsScore'] ?? 0],
+                ['label' => 'Habitudes', 'score' => $financialHealth['habitsScore'] ?? 0],
+            ]; ?>
+            <div class="row g-3">
+                <?php foreach ($scores as $score): ?>
+                <div class="col-12">
+                    <div class="d-flex justify-content-between mb-1 small">
+                        <span><?php echo htmlspecialchars($score['label']); ?></span>
+                        <strong><?php echo $score['score']; ?>%</strong>
                     </div>
-                    <span class="badge bg-warning-light text-warning badge-premium text-wrap text-start">
-                        💡 <?php echo htmlspecialchars($dailyRecommendation['reason']); ?>
-                    </span>
+                    <div class="progress" style="height: 6px; background-color: var(--border);">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: <?php echo $score['score']; ?>%"></div>
+                    </div>
                 </div>
-            </div>
-        </div>
-        <div class="col-md-5">
-            <div class="row g-2 px-md-3">
-                <div class="col-6 text-center border-end">
-                    <span class="text-muted small d-block">Objectif Restant</span>
-                    <span class="fw-bold fs-5 text-dark"><?php echo number_format($totalGoalRemaining, 2); ?> DT</span>
-                </div>
-                <div class="col-6 text-center">
-                    <span class="text-muted small d-block">Jours Restants</span>
-                    <span class="fw-bold fs-5 text-dark"><?php echo $daysUntilDeadline; ?> jours</span>
-                </div>
+                <?php endforeach; ?>
             </div>
         </div>
     </div>
-</div>
-<?php endif; ?>
-
-<!-- Financial Advice & Insights -->
-<?php if (!empty($insights)): ?>
-<div class="card border-0 shadow-sm p-4 mb-4 anim-fade-in-up" style="border-radius: var(--radius-lg);">
-    <h5 class="fw-bold mb-3" style="font-family: var(--font-heading); font-size: 1.05rem;"><i class="bi bi-graph-up-arrow me-2 text-primary"></i>Analyses & Conseils</h5>
-    <div class="row g-3">
-        <?php foreach ($insights as $insight): ?>
-        <?php 
-            $typeClass = 'primary';
-            $icon = 'info-circle';
-            if ($insight['insight_type'] === 'critical') { $typeClass = 'danger'; $icon = 'exclamation-triangle'; }
-            elseif ($insight['insight_type'] === 'warning') { $typeClass = 'warning'; $icon = 'exclamation-circle'; }
-            elseif ($insight['insight_type'] === 'success') { $typeClass = 'success'; $icon = 'check-circle'; }
-        ?>
-        <div class="col-md-6 col-lg-4">
-            <div class="insight-card">
-                <div class="insight-card-icon bg-<?php echo $typeClass; ?>-light text-<?php echo $typeClass; ?>">
-                    <i class="bi bi-<?php echo $icon; ?>"></i>
+    <div class="col-xl-4">
+        <div class="card border-0 shadow-sm p-4 h-100" style="border-radius: var(--radius-lg);">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <div>
+                    <h5 class="fw-bold mb-1">Mon Financial DNA</h5>
+                    <p class="text-secondary small mb-0">Votre comportement financier analysé.</p>
                 </div>
-                <div class="insight-card-content">
-                    <div class="insight-card-title text-<?php echo $typeClass; ?>"><?php echo htmlspecialchars($insight['title']); ?></div>
-                    <div class="insight-card-desc"><?php echo htmlspecialchars($insight['message']); ?></div>
-                </div>
+                <span class="badge bg-warning-light text-warning"><?php echo htmlspecialchars($financialDna['label'] ?? 'Profil'); ?></span>
             </div>
+            <p class="mb-3 text-dark"><?php echo htmlspecialchars($financialDna['description'] ?? 'Analyse basée sur votre comportement récent.'); ?></p>
+            <?php if (!empty($financialDna['traits'])): ?>
+            <div class="d-flex flex-wrap gap-2">
+                <?php foreach ($financialDna['traits'] as $trait): ?>
+                <span class="badge bg-secondary-light text-secondary"><?php echo htmlspecialchars($trait); ?></span>
+                <?php endforeach; ?>
+            </div>
+            <?php endif; ?>
         </div>
-        <?php endforeach; ?>
     </div>
 </div>
-<?php endif; ?>
 
-<!-- 4 Summary Cards Grid -->
+<div class="row g-4 mb-4 anim-fade-in-up">
+    <div class="col-xl-7">
+        <div class="card border-0 shadow-sm p-4 h-100" style="border-radius: var(--radius-lg);">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <div>
+                    <h5 class="fw-bold mb-1">Prévisions</h5>
+                    <p class="text-secondary small mb-0">Ce que votre copilote anticipe pour votre budget.</p>
+                </div>
+                <span class="badge bg-info-light text-info">Projection</span>
+            </div>
+            <div class="d-flex flex-column gap-3">
+                <?php foreach ($predictions as $prediction): ?>
+                <div class="alert alert-modern bg-light border-0 p-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="badge bg-<?php echo $prediction['type'] === 'warning' ? 'danger' : ($prediction['type'] === 'success' ? 'success' : 'info'); ?>-light text-<?php echo $prediction['type'] === 'warning' ? 'danger' : ($prediction['type'] === 'success' ? 'success' : 'info'); ?> rounded-circle p-2">
+                            <i class="bi bi-<?php echo $prediction['type'] === 'warning' ? 'exclamation-triangle' : ($prediction['type'] === 'success' ? 'check-circle' : 'info-circle'); ?>"></i>
+                        </span>
+                        <div>
+                            <p class="mb-0 text-dark small"><?php echo htmlspecialchars($prediction['message']); ?></p>
+                            <small class="text-muted"><?php echo htmlspecialchars($prediction['time'] ?? 'Aujourd\'hui'); ?></small>
+                        </div>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-5">
+        <div class="card border-0 shadow-sm p-4 h-100" style="border-radius: var(--radius-lg);">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <div>
+                    <h5 class="fw-bold mb-1">Notifications intelligentes</h5>
+                    <p class="text-secondary small mb-0">Seulement les alertes qui ont un vrai impact.</p>
+                </div>
+                <span class="badge bg-primary-light text-primary">Alerte</span>
+            </div>
+            <?php if (!empty($notifications)): ?>
+            <div class="list-group">
+                <?php foreach ($notifications as $note): ?>
+                <div class="list-group-item border-0 py-3 px-0 rounded-4 mb-2" style="background: rgba(248,249,250,0.9);">
+                    <div class="d-flex align-items-start justify-content-between gap-3">
+                        <div>
+                            <p class="mb-1 text-dark small"><?php echo htmlspecialchars($note['message']); ?></p>
+                            <small class="text-muted"><?php echo htmlspecialchars($note['time']); ?></small>
+                        </div>
+                        <span class="badge bg-<?php echo $note['type'] === 'warning' ? 'danger' : ($note['type'] === 'success' ? 'success' : 'info'); ?>-light text-<?php echo $note['type'] === 'warning' ? 'danger' : ($note['type'] === 'success' ? 'success' : 'info'); ?>"><?php echo ucfirst($note['type']); ?></span>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            </div>
+            <?php else: ?>
+            <p class="text-muted small mb-0">Aucune notification utile pour le moment.</p>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4 anim-fade-in-up">
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm p-4 h-100" style="border-radius: var(--radius-lg);">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <div>
+                    <h5 class="fw-bold mb-1">Factures à venir</h5>
+                    <p class="text-secondary small mb-0">Anticipez vos prochaines échéances.</p>
+                </div>
+                <span class="badge bg-secondary-light text-secondary"><?php echo count($upcomingBills); ?> items</span>
+            </div>
+            <?php if (!empty($upcomingBills)): ?>
+            <div class="list-group">
+                <?php foreach ($upcomingBills as $bill): ?>
+                <div class="list-group-item border-0 py-3 px-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong><?php echo htmlspecialchars($bill['name']); ?></strong>
+                            <div class="text-muted small"><?php echo htmlspecialchars($bill['category']); ?></div>
+                        </div>
+                        <div class="text-end">
+                            <div class="fw-bold"><?php echo number_format($bill['amount'], 2); ?> DT</div>
+                            <small class="text-muted"><?php echo htmlspecialchars($bill['dueDate']); ?></small>
+                        </div>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            </div>
+            <?php else: ?>
+            <p class="text-muted small mb-0">Aucune facture planifiée pour l'instant.</p>
+            <?php endif; ?>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm p-4 h-100" style="border-radius: var(--radius-lg);">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <div>
+                    <h5 class="fw-bold mb-1">Plan de priorisation</h5>
+                    <p class="text-secondary small mb-0">Quel objectif prioriser et pourquoi.</p>
+                </div>
+                <i class="bi bi-lightning-charge-fill text-primary fs-4"></i>
+            </div>
+            <p class="text-dark mb-2"><?php echo htmlspecialchars($goalStrategy['recommendation'] ?? 'Créez des objectifs pour recevoir une stratégie.'); ?></p>
+            <?php if (!empty($goalStrategy['details'])): ?>
+            <div class="row g-3">
+                <?php foreach ($goalStrategy['details'] as $key => $detail): ?>
+                <div class="col-12">
+                    <div class="p-3 bg-light rounded-4">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <strong><?php echo ucfirst($key); ?></strong>
+                            <span class="badge bg-primary-light text-primary"><?php echo htmlspecialchars($detail['deadline'] ?? '—'); ?></span>
+                        </div>
+                        <div class="text-muted small">Restant : <?php echo htmlspecialchars($detail['remaining'] ?? '0'); ?> DT</div>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            </div>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>
+
+<script type="module" src="assets/js/dashboard.js"></script>
+
+<?php include __DIR__ . '/../partials/footer.php'; ?>
 <div class="dashboard-grid-1 anim-fade-in-up">
     <!-- Card 1: Income -->
     <div class="stat-card income">
