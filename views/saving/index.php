@@ -16,28 +16,28 @@
     <div class="col-sm-6 col-md-3">
         <div class="stat-card savings">
             <span class="stat-card-label">Total épargné</span>
-            <div class="stat-card-value text-success"><?php echo $boardData['stats']['saved']; ?> DT</div>
-            <div class="stat-card-footer">Sur <?php echo $boardData['stats']['totalGoals']; ?> objectifs</div>
+            <div id="stat-saved" class="stat-card-value text-success"><?php echo $boardData['stats']['saved']; ?> DT</div>
+            <div class="stat-card-footer">Sur <span id="stat-total-goals"><?php echo $boardData['stats']['totalGoals']; ?></span> objectifs</div>
         </div>
     </div>
     <div class="col-sm-6 col-md-3">
         <div class="stat-card balance">
             <span class="stat-card-label">Objectif total</span>
-            <div class="stat-card-value text-primary"><?php echo $boardData['stats']['goal']; ?> DT</div>
+            <div id="stat-goal" class="stat-card-value text-primary"><?php echo $boardData['stats']['goal']; ?> DT</div>
             <div class="stat-card-footer">Montant à atteindre</div>
         </div>
     </div>
     <div class="col-sm-6 col-md-3">
         <div class="stat-card expenses">
             <span class="stat-card-label">Restant</span>
-            <div class="stat-card-value text-danger"><?php echo $boardData['stats']['remaining']; ?> DT</div>
+            <div id="stat-remaining" class="stat-card-value text-danger"><?php echo $boardData['stats']['remaining']; ?> DT</div>
             <div class="stat-card-footer">Reste à économiser</div>
         </div>
     </div>
     <div class="col-sm-6 col-md-3">
         <div class="stat-card income">
             <span class="stat-card-label">Jours restants</span>
-            <div class="stat-card-value text-warning"><?php echo $boardData['stats']['daysRemaining']; ?></div>
+            <div id="stat-days-remaining" class="stat-card-value text-warning"><?php echo $boardData['stats']['daysRemaining']; ?></div>
             <div class="stat-card-footer">Ce mois-ci</div>
         </div>
     </div>
@@ -51,7 +51,7 @@
                     <h5 class="fw-bold mb-1">Tableau d'épargne du mois</h5>
                     <p class="text-muted small mb-0"><?php echo htmlspecialchars($boardData['monthLabel']); ?></p>
                 </div>
-                <span class="badge bg-primary-light text-primary badge-premium">Progression <?php echo $boardData['progressPercent']; ?>%</span>
+                <span id="saving-progress-badge" class="badge bg-primary-light text-primary badge-premium">Progression <?php echo $boardData['progressPercent']; ?>%</span>
             </div>
 
             <div class="saving-board-grid">
@@ -61,7 +61,7 @@
                           if ($cell['today']) $classes[] = 'today';
                           if ($cell['weekend']) $classes[] = 'weekend';
                     ?>
-                    <div class="<?php echo implode(' ', $classes); ?>" data-day="<?php echo $cell['date']; ?>">
+                    <div class="<?php echo implode(' ', $classes); ?>" data-day="<?php echo $cell['date']; ?>" data-amount="<?php echo $cell['amount']; ?>">
                         <span class="saving-cell-day"><?php echo $cell['dayLabel']; ?></span>
                         <span class="saving-cell-amount"><?php echo $cell['amount']; ?> DT</span>
                         <?php if ($cell['completed']): ?>
