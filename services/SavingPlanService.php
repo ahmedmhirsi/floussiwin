@@ -26,6 +26,14 @@ class SavingPlanService
         $profile = $this->userProfile->findByUserId($userId);
         $goals = $this->goal->getActiveGoalsByUser($userId);
         $recommendation = $this->recommendationService->calculateDailyRecommendation($userId);
+        // normalize recommendation keys consumed by the view
+        $rec = $recommendation ?: [];
+        $rec['daily_budget'] = isset($rec['daily_budget']) ? round((float)$rec['daily_budget'], 2) : 0.00;
+        // some services expose average_daily_expense; map it to yesterday_expenses for the view
+        $rec['yesterday_expenses'] = isset($rec['average_daily_expense']) ? round((float)$rec['average_daily_expense'], 2) : ($rec['daily_budget'] ?? 0.00);
+        $rec['recommended_savings'] = isset($rec['recommended_savings']) ? round((float)$rec['recommended_savings'], 2) : 0.00;
+        $rec['reason'] = isset($rec['reason']) ? $rec['reason'] : '';
+        $recommendation = $rec;
 
         $totalTarget = 0;
         $totalSaved = 0;
@@ -54,7 +62,7 @@ class SavingPlanService
                 'totalGoals' => count($goals)
             ],
             'monthLabel' => $today->format('F Y'),
-            'cells' => $this->buildDailyCells($recommendation, $totalRemaining),
+            'cells' => $this->buildDailyCells($userId, $recommendation, $totalRemaining),
             'progressPercent' => $progressPercent,
         ];
 
@@ -84,34 +92,92 @@ class SavingPlanService
         ];
     }
 
-    private function buildDailyCells($recommendation, $totalRemaining)
+    private function buildDailyCells($userId, $recommendation, $totalRemaining)
     {
         $cells = [];
         $today = new DateTime();
         $year = (int) $today->format('Y');
         $month = (int) $today->format('n');
         $daysInMonth = (int) $today->format('t');
-        $dailyAmount = $recommendation['recommended_savings'];
-        if ($dailyAmount <= 0 && $daysInMonth > 0) {
-            $dailyAmount = round($totalRemaining / $daysInMonth, 2);
-        }
+        // If there's something left to save for goals, distribute it across days
+        // with deterministic variability per user/month so values don't change on refresh.
+        if ($totalRemaining > 0 && $daysInMonth > 0) {
+            $weights = [];
+            $sumW = 0;
+            for ($d = 1; $d <= $daysInMonth; $d++) {
+                $tmpDate = DateTime::createFromFormat('Y-n-j', "$year-$month-$d");
+                $wday = (int)$tmpDate->format('N');
+                // derive a deterministic int from user/month/day using sha256
+                $h = substr(hash('sha256', "{$userId}-{$year}-{$month}-{$d}"), 0, 8);
+                $randInt = hexdec($h) % 1000; // 0..999
+                if ($wday >= 6) {
+                    // weekend: smaller base (10..80)
+                    $base = 10 + ($randInt % 71);
+                } else {
+                    // weekday: larger base (40..160)
+                    $base = 40 + ($randInt % 121);
+                }
+                $weights[$d] = $base;
+                $sumW += $base;
+            }
 
-        for ($day = 1; $day <= $daysInMonth; $day++) {
-            $date = DateTime::createFromFormat('Y-n-j', "$year-$month-$day");
-            $formatted = $date->format('Y-m-d');
-            $isToday = $formatted === $today->format('Y-m-d');
-            $weekDay = (int)$date->format('N');
-            $weekend = $weekDay >= 6;
-            $cells[] = [
-                'date' => $formatted,
-                'dayLabel' => $date->format('d'),
-                'weekdayLabel' => $date->format('D'),
-                'amount' => number_format($dailyAmount, 2),
-                'completed' => false,
-                'today' => $isToday,
-                'weekend' => $weekend,
-                'spent' => 0,
-            ];
+            // compute raw amounts from weights deterministically
+            $amounts = [];
+            $remaining = round((float)$totalRemaining, 2);
+            $allocated = 0.0;
+            for ($d = 1; $d <= $daysInMonth; $d++) {
+                if ($d == $daysInMonth) {
+                    $amt = round($remaining - $allocated, 2);
+                } else {
+                    $share = $weights[$d] / $sumW;
+                    $amt = round(max(0.01, $remaining * $share), 2);
+                    $allocated += $amt;
+                }
+                $amounts[$d] = $amt;
+            }
+
+            // build cells with variable but deterministic amounts
+            for ($day = 1; $day <= $daysInMonth; $day++) {
+                $date = DateTime::createFromFormat('Y-n-j', "$year-$month-$day");
+                $formatted = $date->format('Y-m-d');
+                $isToday = $formatted === $today->format('Y-m-d');
+                $weekDay = (int)$date->format('N');
+                $weekend = $weekDay >= 6;
+                $cells[] = [
+                    'date' => $formatted,
+                    'dayLabel' => $date->format('d'),
+                    'weekdayLabel' => $date->format('D'),
+                    'amount' => number_format($amounts[$day], 2),
+                    'completed' => false,
+                    'today' => $isToday,
+                    'weekend' => $weekend,
+                    'spent' => 0,
+                ];
+            }
+        } else {
+            // fallback: uniform daily amount (as before)
+            $dailyAmount = $recommendation['recommended_savings'];
+            if ($dailyAmount <= 0 && $daysInMonth > 0) {
+                $dailyAmount = round($totalRemaining / $daysInMonth, 2);
+            }
+
+            for ($day = 1; $day <= $daysInMonth; $day++) {
+                $date = DateTime::createFromFormat('Y-n-j', "$year-$month-$day");
+                $formatted = $date->format('Y-m-d');
+                $isToday = $formatted === $today->format('Y-m-d');
+                $weekDay = (int)$date->format('N');
+                $weekend = $weekDay >= 6;
+                $cells[] = [
+                    'date' => $formatted,
+                    'dayLabel' => $date->format('d'),
+                    'weekdayLabel' => $date->format('D'),
+                    'amount' => number_format($dailyAmount, 2),
+                    'completed' => false,
+                    'today' => $isToday,
+                    'weekend' => $weekend,
+                    'spent' => 0,
+                ];
+            }
         }
 
         return $cells;

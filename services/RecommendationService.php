@@ -42,8 +42,15 @@ class RecommendationService
             ];
         }
 
+        // Ensure we can read a monthly income value even if the DB schema
+        // doesn't expose the generated column `total_monthly_income`.
+        if (isset($profile['total_monthly_income'])) {
+            $monthlyIncome = (float) $profile['total_monthly_income'];
+        } else {
+            $monthlyIncome = (float) ($profile['monthly_salary'] ?? 0) + (float) ($profile['additional_income'] ?? 0);
+        }
+
         $fixedExpenses = $this->fixedExpense->getTotalFixedExpenses($userId);
-        $monthlyIncome = $profile['total_monthly_income'];
         $availableAfterFixed = max(0, $monthlyIncome - $fixedExpenses);
         $monthlyExpenses = $this->transaction->getMonthlySumByType($userId, 'expense');
         $dailyExpenses = $this->transaction->getMonthlySumByType($userId, 'expense');

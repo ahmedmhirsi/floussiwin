@@ -95,12 +95,21 @@
                 </div>
             </div>
             <div class="mb-4">
-                <div class="display-5 fw-bold text-primary"><?php echo $boardData['recommendation']['recommended_savings']; ?> DT</div>
+                <div class="display-5 fw-bold text-primary"><?php echo number_format($boardData['recommendation']['recommended_savings'] ?? 0, 2); ?> DT</div>
                 <span class="badge bg-success-light text-success badge-premium">Budget quotidien</span>
             </div>
             <div class="rounded-4 p-3" style="background: rgba(255,255,255,0.7);">
-                <p class="mb-0 text-muted small"><?php echo htmlspecialchars($boardData['recommendation']['reason']); ?></p>
+                <p class="mb-0 text-muted small"><?php echo htmlspecialchars($boardData['recommendation']['reason'] ?? ''); ?></p>
             </div>
+            <?php if (empty($boardData['recommendation']['is_configured'])): ?>
+                <div class="mt-3">
+                    <a href="index.php?route=profile" class="btn btn-outline-primary btn-sm">Configurer mon profil</a>
+                </div>
+            <?php elseif (($boardData['recommendation']['recommended_savings'] ?? 0) <= 0): ?>
+                <div class="mt-3">
+                    <a href="index.php?route=profile" class="btn btn-outline-primary btn-sm">Vérifier revenus & charges</a>
+                </div>
+            <?php endif; ?>
             <div class="mt-4 pt-3 border-top border-white border-opacity-30">
                 <div class="d-flex justify-content-between mb-2">
                     <span class="text-secondary small">Dépenses d'hier</span>
