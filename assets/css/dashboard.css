@@ -1,0 +1,137 @@
+/* Dashboard grids */
+.dashboard-grid-1 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.dashboard-row-charts {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.dashboard-row-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+/* Chart Card wrapper */
+.chart-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-premium);
+}
+
+.chart-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.chart-card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.chart-canvas-wrapper {
+    position: relative;
+    width: 100%;
+    min-height: 260px;
+}
+
+/* Recent activity transaction items */
+.activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.activity-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.85rem 1rem;
+    border-radius: var(--radius-md);
+    background: var(--card);
+    border: 1px solid var(--border);
+    transition: all 0.2s ease;
+}
+
+.activity-item:hover {
+    background: var(--bg-secondary);
+    border-color: var(--border-hover);
+    transform: translateX(3px);
+}
+
+.activity-details {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.activity-category-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
+    background: var(--bg-secondary);
+}
+
+.activity-desc {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.activity-meta {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.activity-amount {
+    font-weight: 700;
+    font-family: var(--font-heading);
+    font-size: 0.95rem;
+}
+
+.activity-amount.income {
+    color: var(--success-hover);
+}
+
+.activity-amount.expense {
+    color: var(--danger-hover);
+}
+
+/* Quick recommendations box */
+.rec-box {
+    background: linear-gradient(135deg, var(--primary-light), rgba(59, 130, 246, 0.05));
+    border: 1px solid rgba(37, 99, 235, 0.15);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+}
+
+/* Responsive adjustment */
+@media (max-width: 1024px) {
+    .dashboard-row-charts {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-row-details {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,0 +1,193 @@
+/* Form Inputs & Controls Premium */
+.form-group-premium {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.form-control-premium {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    background-color: var(--card);
+    color: var(--text);
+    font-size: 0.9rem;
+    outline: none;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.form-control-premium:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px var(--primary-glow);
+}
+
+/* Floating labels effect */
+.form-floating-premium {
+    position: relative;
+}
+
+.form-floating-premium .form-control-premium {
+    padding: 1.25rem 1rem 0.6rem;
+}
+
+.form-floating-premium label {
+    position: absolute;
+    top: 50%;
+    left: 1rem;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    pointer-events: none;
+    transition: all 0.2s ease;
+}
+
+.form-floating-premium .form-control-premium:focus ~ label,
+.form-floating-premium .form-control-premium:not(:placeholder-shown) ~ label {
+    top: 25%;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+/* Input group with icon */
+.input-icon-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-icon-group i {
+    position: absolute;
+    left: 1rem;
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    pointer-events: none;
+}
+
+.input-icon-group .form-control-premium {
+    padding-left: 2.75rem;
+}
+
+/* Real-time Field validation */
+.form-control-premium.is-valid {
+    border-color: var(--success);
+}
+
+.form-control-premium.is-valid:focus {
+    box-shadow: 0 0 0 4px var(--success-glow);
+}
+
+.form-control-premium.is-invalid {
+    border-color: var(--danger);
+}
+
+.form-control-premium.is-invalid:focus {
+    box-shadow: 0 0 0 4px var(--danger-glow);
+}
+
+.field-error-msg {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--danger);
+    margin-top: 0.35rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+/* Premium buttons */
+.btn-premium {
+    background: linear-gradient(135deg, var(--primary), #3B82F6);
+    color: #FFFFFF;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    padding: 0.8rem 1.75rem;
+    border-radius: var(--radius-md);
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    box-shadow: 0 4px 14px 0 rgba(37, 99, 235, 0.3);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-premium:hover {
+    background: linear-gradient(135deg, var(--primary-hover), #2563EB);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px 0 rgba(37, 99, 235, 0.4);
+    color: #FFFFFF;
+}
+
+.btn-premium:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px 0 rgba(37, 99, 235, 0.3);
+}
+
+.btn-premium:disabled {
+    background: var(--border) !important;
+    color: var(--text-muted) !important;
+    box-shadow: none !important;
+    cursor: not-allowed;
+}
+
+.btn-glass-premium {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: var(--text);
+    font-family: var(--font-heading);
+    font-weight: 600;
+    padding: 0.8rem 1.75rem;
+    border-radius: var(--radius-md);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.btn-glass-premium:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px);
+}
+
+.btn-outline-premium {
+    background: transparent;
+    color: var(--primary);
+    border: 1px solid var(--primary);
+    font-family: var(--font-heading);
+    font-weight: 600;
+    padding: 0.75rem 1.75rem;
+    border-radius: var(--radius-md);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-outline-premium:hover {
+    background: var(--primary-light);
+    transform: translateY(-2px);
+}
+
+/* File uploading style */
+.upload-btn-wrapper {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+}
+
+.upload-btn-wrapper input[type=file] {
+    font-size: 100px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    cursor: pointer;
+}
