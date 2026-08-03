@@ -36,16 +36,26 @@ class SavingPlanService
             $totalRemaining += max(0, $goal['target_amount'] - $goal['saved_amount']);
         }
 
+        $today = new \DateTime();
+        $daysInMonth = (int)$today->format('t');
+        $daysRemaining = $daysInMonth - (int)$today->format('j') + 1;
+        $progressPercent = $totalTarget > 0 ? round(($totalSaved / $totalTarget) * 100, 1) : 0;
+
         $plan = [
             'primaryObjective' => $this->findPrimaryGoal($goals),
             'recommendation' => $recommendation,
+            // Stats structured like the original engine to keep views stable
             'stats' => [
                 'saved' => number_format($totalSaved, 2),
                 'goal' => number_format($totalTarget, 2),
                 'remaining' => number_format($totalRemaining, 2),
-                'progress' => $totalTarget > 0 ? round(($totalSaved / $totalTarget) * 100, 1) : 0,
+                'daysRemaining' => $daysRemaining,
+                'progress' => $progressPercent,
+                'totalGoals' => count($goals)
             ],
+            'monthLabel' => $today->format('F Y'),
             'cells' => $this->buildDailyCells($recommendation, $totalRemaining),
+            'progressPercent' => $progressPercent,
         ];
 
         return $plan;
@@ -90,12 +100,17 @@ class SavingPlanService
             $date = DateTime::createFromFormat('Y-n-j', "$year-$month-$day");
             $formatted = $date->format('Y-m-d');
             $isToday = $formatted === $today->format('Y-m-d');
+            $weekDay = (int)$date->format('N');
+            $weekend = $weekDay >= 6;
             $cells[] = [
                 'date' => $formatted,
-                'label' => $date->format('d'),
-                'weekday' => $date->format('D'),
+                'dayLabel' => $date->format('d'),
+                'weekdayLabel' => $date->format('D'),
                 'amount' => number_format($dailyAmount, 2),
+                'completed' => false,
                 'today' => $isToday,
+                'weekend' => $weekend,
+                'spent' => 0,
             ];
         }
 
